@@ -163,14 +163,26 @@ pair<vector<int>,vector<int>> divide(vector<int> v1, vector<int> v2)
 int main()
 {
   vector<int> v1,v2;
-  v1={1,0,0,0,0,0,0,0,0};
-  v2={3,3};
+  v1={1,0,0,0,0,0};
+  v2={1,0,0};
+  vector<int>a=add(v1,v2);
+  vector<int>s=subtract(v1,v2);
+  vector<int>m=multiply(v1,v2);
   pair<vector<int>,vector<int>> d=divide(v1,v2);
   vector<int> v3=d.first,v4=d.second;
+  
+  for(auto v:a)
+    cout<<v;
+  cout<<endl;
+  for(auto v:s)
+    cout<<v;
+  cout<<endl;
+  for(auto v:m)
+    cout<<v;
+  cout<<endl;
   for(auto v:v3)
     cout<<v;
   cout<<endl;
   for(auto v:v4)
     cout<<v;
 }
-
