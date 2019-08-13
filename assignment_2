@@ -1,0 +1,149 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+struct node
+{
+	int x, y;
+	node *next;
+};
+node *head = NULL;
+
+void AddFirst(int x, int y)
+{
+	node *newnode = (node *)malloc(sizeof(node));
+	newnode->x = x;
+	newnode->y = y;
+	newnode->next = head;
+	head = newnode;
+}
+
+int DelFirst()
+{
+	if (head == NULL)
+		return -1;
+	node *temp = head->next;
+	free(head);
+	head = temp;
+	return 0;
+}
+
+int Del(int x, int y)
+{
+	node *temp = head;
+	node *prev = temp;
+	while (temp != NULL)
+	{
+		if (temp->x == x && temp->y == y)
+		{
+			if(temp!=head)
+			{
+				prev->next = temp->next;
+				free(temp);
+			}
+			else
+			{
+				prev=temp->next;
+				free(temp);
+				head =prev;
+			}
+			
+			
+			return 0;
+		}
+		prev = temp;
+		temp = temp->next;
+	}
+	return -1;
+}
+
+int Search(float d)
+{
+	node *temp = head;
+	int count = -1;
+	while (temp != NULL)
+	{
+		if (temp->x * temp->x + temp->y * temp->y <= d * d)
+		{
+			count++;
+			cout << "(" << temp->x << "," << temp->y << ") ";
+		}
+		temp = temp->next;
+	}
+	return count;
+}
+
+int Search(int x, int y)
+{
+	node *temp = head;
+	int count = 0;
+	while (temp != NULL)
+	{
+		if (temp->x == x && temp->y == y)
+		{
+			count++;
+		}
+		temp = temp->next;
+	}
+	return count;
+}
+
+int Length()
+{
+	node *temp = head;
+	int count = 0;
+	while (temp != NULL)
+	{
+		count++;
+		temp = temp->next;
+	}
+	return count;
+}
+
+int main()
+{
+	int t;
+	cin >> t;
+	while (t--)
+	{
+		int c;
+		cin >> c;
+		int x, y;
+		float d;
+		int al;
+		switch (c)
+		{
+		case 1:
+			cin >> x >> y;
+			AddFirst(x, y);
+			break;
+		case 2:
+			cout << DelFirst() << endl;
+			break;
+		case 3:
+			cin >> x >> y;
+			cout << Del(x, y) << endl;
+			break;
+		case 4:
+			cin >> d;
+			if (Search(d) == -1)
+				cout << -1;
+			cout << endl;
+			break;
+		case 5:
+			cin >> x >> y;
+			al = Search(x, y);
+			if (al == 0)
+				cout << "False";
+			else
+				cout << al;
+			cout << endl;
+			break;
+		case 6:
+			cout << Length() << endl;
+			break;
+		default:
+			break;
+		}
+	}
+}
