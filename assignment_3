@@ -1,0 +1,107 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+	long int t;
+	cin>>t;
+	while(t--)
+	{
+		stack<char> st;
+		string s;
+		cin>>s;
+		int c=0;
+		for(auto ch:s)
+		{
+			if(ch=='{'||ch=='['||ch=='('||ch=='<')
+				st.push(ch);
+			else if(ch=='|')
+			{
+				if(st.empty())
+					st.push(ch);
+				else
+				{
+					if(st.top()==ch)
+						st.pop();
+					else
+						st.push(ch);
+				}
+				
+			}
+			else if(ch=='}')
+			{
+				if(st.empty())
+				{
+					c=1;
+					break;
+				}
+				else if(st.top()=='{')
+					st.pop();
+				else
+				{
+					c=1;
+					break;
+				}
+			}
+			else if(ch==']')
+			{
+				if(st.empty())
+				{
+					c=1;
+					break;
+				}
+				if(st.top()=='[')
+					st.pop();
+				else
+				{
+					c=1;
+					break;
+				}
+			}
+			else if(ch==')')
+			{
+				if(st.empty())
+				{
+					c=1;
+					break;
+				}
+				if(st.top()=='(')
+					st.pop();
+				else
+				{
+					c=1;
+					break;
+				}
+			}
+			else if(ch=='>')
+			{
+				if(st.empty())
+				{
+					c=1;
+					break;
+				}
+				if(st.top()=='<')
+					st.pop();
+				else
+				{
+					c=1;
+					break;
+				}
+			}
+			else
+			{
+				c=1;//for input character other than bracket
+				break;
+			}
+			
+		}
+		if(c==1||!st.empty())
+			cout<<"NO"<<endl;
+		else
+		{
+			cout<<"YES"<<endl;
+		}
+		
+	}
+}
