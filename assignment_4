@@ -195,7 +195,7 @@ int main()
 			// 	cout << i << " ";
 			// cout << endl;
 			node *tree = build(op);
-			cout << evaluate(tree);
+			cout << evaluate(tree)<<endl;
 		}
 	}
 }
