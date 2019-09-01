@@ -1,0 +1,419 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Map
+{
+public:
+    string key;
+    int value;
+    Map *left;
+    Map *right;
+    int height;
+};
+
+int max(int a, int b)
+{
+    return (a > b) ? a : b;
+}
+
+int height(Map *N)
+{
+    if (N == NULL)
+        return 0;
+    return N->height;
+}
+
+Map *newNode(string key, int value)
+{
+    Map *node = new Map();
+    node->key = key;
+    node->value = value;
+    node->left = NULL;
+    node->right = NULL;
+    node->height = 1;
+    return (node);
+}
+
+Map*rightRotate(Map *y)
+{
+    Map *x = y->left;
+    Map *T2 = x->right;
+
+    x->right = y;
+    y->left = T2;
+
+    y->height = max(height(y->left),
+                    height(y->right)) +
+                1;
+    x->height = max(height(x->left),
+                    height(x->right)) +
+                1;
+    return x;
+}
+
+Map *leftRotate(Map *x)
+{
+    Map *y = x->right;
+    Map *T2 = y->left;
+
+    y->left = x;
+    x->right = T2;
+
+    x->height = max(height(x->left),
+                    height(x->right)) +
+                1;
+    y->height = max(height(y->left),
+                    height(y->right)) +
+                1;
+
+    return y;
+}
+
+int getBalance(Map *N)
+{
+    if (N == NULL)
+        return 0;
+    return height(N->left) - height(N->right);
+}
+
+Map *insert(Map *node, string key, int value)
+{
+    if (node == NULL)
+        return (newNode(key, value));
+
+    if (key < node->key)
+        node->left = insert(node->left, key, value);
+    else if (key > node->key)
+        node->right = insert(node->right, key, value);
+    else
+        return node;
+
+    node->height = 1 + max(height(node->left),
+                           height(node->right));
+
+    int balance = getBalance(node);
+
+
+    if (balance > 1 && key < node->left->key)
+        return rightRotate(node);
+
+    if (balance < -1 && key > node->right->key)
+        return leftRotate(node);
+
+    if (balance > 1 && key > node->left->key)
+    {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+    if (balance < -1 && key < node->right->key)
+    {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+Map *search(Map *root, string key)
+{
+    if (root == NULL || root->key == key)
+        return root;
+
+    if (root->key < key)
+        return search(root->right, key);
+
+    return search(root->left, key);
+}
+
+void deltree(Map *root)
+{
+    if(root==NULL)
+        return ;
+    deltree(root->left);
+    deltree(root->right);
+    free(root);
+    return;
+}
+
+int isevaluate = 1;
+struct node
+{
+	struct node *left, *right;
+	int value, opt;
+	string var;
+};
+
+node *cn(int v)
+{
+	node *temp = new node;
+	temp->left = NULL;
+	temp->right = NULL;
+	temp->value = v;
+	temp->opt = 0;
+	return temp;
+}
+
+node *cv(char v)
+{
+	node *temp = new node;
+	temp->left = NULL;
+	temp->right = NULL;
+	temp->var = v;
+	temp->opt = 0;
+	return temp;
+}
+
+node *cno(int v)
+{
+	node *temp = new node;
+	temp->left = NULL;
+	temp->right = NULL;
+	temp->opt = v;
+	temp->value = -1;
+	return temp;
+}
+node *build(vector<string> op, Map *mp, char assign)
+{
+	stack<node *> st;
+	for (auto s : op)
+	{
+		if (s[0] == '+' || s[0] == '/' || s[0] == '*' || s[0] == '-' || s[0] == '^' || s[0] == '=')
+		{
+			node *l, *r;
+			r = st.top();
+			st.pop();
+			l = st.top();
+			st.pop();
+			node *p = cno(s[0]);
+			p->left = l;
+			p->right = r;
+			st.push(p);
+		}
+		else if (s[0] == '|' || s[0] == '}')
+		{
+			// if (st.top()->opt == 0 || s[0] == '}')
+			// {
+			int value = st.top()->value;
+			st.pop();
+			if (s[0] == '|')
+				st.push(cn(-value));
+			else
+				st.push(cn(value));
+			// }
+			// else
+			// {
+			// 	node *l, *r;
+			// 	l = st.top();
+			// 	st.pop();
+			// 	node *p = cno(s[0]);
+			// 	p->left = l;
+			// 	st.push(p);
+			// }
+		}
+		else if (assign == s[0])
+		{
+			st.push(cv(s[0]));
+		}
+
+		else if (!isdigit(s[0]))
+		{
+			if (search(mp,&s[0])==NULL)
+			{
+                // cout<<"*";
+				return NULL;
+			}
+			st.push(cn(search(mp,&s[0])->value));
+		}
+		else
+		{
+			st.push(cn(strtod(&s[0], NULL)));
+		}
+	}
+	return st.top();
+}
+
+long long int evaluate(node *ptr, Map *&mp)
+{
+	switch (ptr->opt)
+	{
+	case '+':
+		return evaluate(ptr->left, mp) + evaluate(ptr->right, mp);
+	case '*':
+		return evaluate(ptr->left, mp) * evaluate(ptr->right, mp);
+	case '-':
+		return evaluate(ptr->left, mp) - evaluate(ptr->right, mp);
+	case '/':
+		return evaluate(ptr->left, mp) / evaluate(ptr->right, mp);
+	case '^':
+		return (long long int)pow(evaluate(ptr->left, mp), evaluate(ptr->right, mp));
+	case '=':
+        // cout<< evaluate(ptr->right, mp);
+        if(search(mp,(ptr->left)->var)==NULL)
+            mp=insert(mp, (ptr->left)->var,evaluate(ptr->right, mp));
+        else 
+            search(mp,(ptr->left)->var)->value=evaluate(ptr->right, mp);
+		// amp[vmp.find((ptr->left)->var)-vmp.begin()] = evaluate(ptr->right, mp);
+		return -1;
+	// case '|':
+	// 	return -evaluate(ptr->left);
+	default:
+		return ptr->value;
+	}
+}
+
+int pro(string c)
+{
+	if (c.compare("=") == 0)
+		return 1;
+	if (c.compare("(") == 0 || c.compare(")") == 0)
+		return 2;
+	if (c.compare("*") == 0 || c.compare("/") == 0)
+		return 4;
+	if (c.compare("+") == 0 || c.compare("-") == 0)
+		return 3;
+	if (c.compare("^") == 0)
+		return 5;
+	if (c.compare("|") == 0 || c.compare("}") == 0)
+		return 6;
+	return 0;
+}
+vector<string> cpostfix(vector<string> v)
+{
+	vector<string> ans;
+	stack<string> st;
+	for (auto c : v)
+	{
+		if (!c.compare("+") || !c.compare("-") || !c.compare("*") || !c.compare("/") || !c.compare("^") || !c.compare("(") || !c.compare(")") || c.compare("|") == 0 || c.compare("}") == 0 || !c.compare("="))
+		{
+			if (st.empty())
+				st.push(c);
+			else
+			{
+				if (!c.compare("(") || !c.compare("|") || !c.compare("}") || !c.compare("="))
+					st.push(c);
+				else if (!c.compare(")"))
+				{
+					// cout<<st.top()<<endl;
+
+					while ((st.top()).compare("(") != 0)
+					{
+						ans.push_back(st.top());
+						st.pop();
+					}
+					st.pop();
+				}
+				else if (!c.compare("+") || !c.compare("-") || !c.compare("*") || !c.compare("/"))
+				{
+					while (!st.empty() && pro(c) <= pro(st.top()))
+					{
+						ans.push_back(st.top());
+						st.pop();
+					}
+					st.push(c);
+				}
+				else if (!c.compare("^"))
+				{
+					while (!st.empty() && pro(c) < pro(st.top()))
+					{
+						ans.push_back(st.top());
+						st.pop();
+					}
+					st.push(c);
+				}
+			}
+		}
+		else
+		{
+			ans.push_back(c);
+		}
+	}
+	while (!st.empty())
+	{
+		ans.push_back(st.top());
+		st.pop();
+	}
+	return ans;
+}
+int main()
+{
+	int t;
+	cin >> t;
+	while (t--)
+	{
+		int n;
+		cin >> n;
+		Map *mp=NULL;
+
+
+		for (int i = 0; i < n; i++)
+		{
+			isevaluate = 1;
+			string s, cur;
+			cin >> s;
+			vector<string> ip, op;
+			for (auto c : s)
+			{
+				if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')' || c == '/' || c == '^' || c == '=')
+				{
+					if (cur.compare("") != 0)
+						ip.push_back(cur);
+					cur = "";
+					cur.push_back(c);
+					ip.push_back(cur);
+					cur = "";
+				}
+				else
+					cur.push_back(c);
+			}
+			if (cur.compare("") != 0)
+				ip.push_back(cur);
+			for (int i = 0; i < ip.size(); i++)
+			{
+				if (ip[i][0] == '-')
+				{
+					if (i == 0 || ip[i - 1][0] == '(')
+						ip[i] = "|";
+				}
+				if (ip[i][0] == '+')
+				{
+					if (i == 0 || ip[i - 1][0] == '(')
+						ip[i] = "}";
+				}
+			}
+			op = cpostfix(ip);
+			// for (auto i : op)
+			// 	cout << i << " ";
+			// cout << endl;
+			int ans;
+			node *tree;
+			if (op[op.size() - 1][0] == '=')
+			{
+				tree = build(op, mp, op[0][0]);
+				isevaluate = 0;
+			}
+			else
+			{
+				tree = build(op, mp, '~');
+			}
+
+			if (tree != NULL)
+			{
+				ans = evaluate(tree, mp);
+				if (isevaluate)
+					cout << ans << endl;
+			}
+			else
+			{
+				cout << "CANT BE EVALUATED" << endl;
+			}
+
+			// else if (isevaluate == 0)
+			// {
+			//
+			// }
+			// if (op[op.size() - 1][0]!='=')
+		}
+        deltree(mp);
+
+	}
+}
