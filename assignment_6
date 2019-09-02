@@ -1,0 +1,81 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+int binarySearch(int arr[], int l, int r, int x)
+{
+    if (r >= l)
+    {
+        int mid = l + (r - l) / 2;
+
+        if (arr[mid] == x)
+            return mid;
+
+        if (arr[mid] > x)
+            return binarySearch(arr, l, mid - 1, x);
+
+        return binarySearch(arr, mid + 1, r, x);
+    }
+    return -1;
+}
+int getid(int id[], int cid, int c)
+{
+    int ans = binarySearch(id, 0, c, cid);
+    return ans;
+}
+int main()
+{
+    int n, nu, maxi = -1;
+    cin >> nu >> n;
+    int op[n], qid[n], id[n], fid[n], m[n], rech[n];
+    int c = 0;
+    for (int i = 0; i < n; i++)
+    {
+        rech[i] = 0;
+        cin >> op[i];
+        if (op[i] == 1)
+        {
+            cin >> qid[i] >> m[i];
+            fid[i] = qid[i];
+        }
+        else
+        {
+            fid[i] = -1;
+        }
+    }
+    sort(fid, fid + n);
+    int i = 0;
+    while (fid[i] == -1)
+        i++;
+    // cout<<i<<" ";
+    for (c = 0; i < n; i++)
+    {
+        // cout<<fid[i]<<endl;
+        id[c] = fid[i];
+        c++;
+        int tid = fid[i];
+        while (fid[i] == tid)
+            i++;
+        i--;
+    }
+    // for (int i=0;i<c;i++)
+    //     cout<<id[i]<<" ";
+    // cout<<c<<endl;
+    for (int i = 0; i < n; i++)
+    {
+        if (op[i] == 1)
+        {
+            int t = getid(id, qid[i], c);
+            rech[t] += m[i];
+            // cout<<rech[t]<<endl;
+            if (maxi = -1 || rech[t] > rech[maxi])
+                maxi = t;
+        }
+        else
+        {
+            if (maxi == -1)
+                cout << "No data available" << endl;
+            else
+                cout << id[maxi] << endl;
+        }
+    }
+}
