@@ -1,0 +1,31 @@
+#include<bits/stdc++.h>
+using namespace std;
+bool comp(string s11,string s22)
+{
+    string s1=s11,s2=s22;
+    s1.append(s2);
+    s2.append(s11);
+    return s1.compare(s2)>=0;
+}
+int main()
+{
+    int t;
+    cin>>t;
+    while(t--)
+    {
+        int n;
+        cin>>n;
+        string s;
+        vector<string> ip;
+        for(int i=0;i<n;i++)
+        {
+            cin>>s;
+            ip.push_back(s);
+        }
+        cout<<" ";
+        sort(ip.begin(),ip.end(),comp);
+        for(auto it:ip)
+            cout<<it;
+    }
+    return 0;
+}
