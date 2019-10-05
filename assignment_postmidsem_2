@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+struct point
+{
+    int x, y;
+};
+
+bool com(point p1, point p2)
+{
+    if (p1.x == p2.x)
+        return p1.y < p2.y;
+    return p1.x < p2.x;
+}
+
+int cross(point p1, point p2, point p3)
+{
+    return (p3.x - p1.x) * (p2.y - p1.y) - (p2.x - p1.x) * (p3.y - p1.y);
+}
+int main()
+{
+    int t;
+    cin >> t;
+    point pt[t];
+    for (int i = 0; i < t; i++)
+    {
+        cin >> (pt[i].x) >> (pt[i].y);
+    }
+    sort(pt, pt + t, com);
+
+    int k = 0;
+    point v[t * 2];
+    for (int i = 0; i < t; i++)
+    {
+        while (k >= 2 && (cross(v[k - 2], v[k - 1], pt[i]) <= 0))
+            k--;
+        v[k].x = pt[i].x;
+        v[k].y = pt[i].y;
+        k++;
+    }
+    int j = k + 1;
+    for (int i = t - 1; i >= 0; i--)
+    {
+        while (k >= j && (cross(v[k - 2], v[k - 1], pt[i]) <= 0))
+            k--;
+        v[k].x = pt[i].x;
+        v[k].y = pt[i].y;
+        k++;
+    }
+    // cout << k;
+    for (int i = 0; i < k - 1; i++)
+        cout << (v[i].x) << " " << (v[i].y) << endl;
+    return 0;
+}
