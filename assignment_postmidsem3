@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+using namespace std;
+bool col[1000000], vis[1000000];
+vector<int> adj[1000000];
+int k, m, n,c,maxi;
+int getnum(int x, int y)
+{
+    return n * x + y;
+}
+void dfs(int v)
+{
+    vis[v]=true;
+    c++;
+    for(auto p:adj[v])
+        if(!vis[p])
+            dfs(p);
+}
+int main()
+{
+    cin >> n >> m >> k;
+    vector<int> input;
+    for (int i = 0; i < k; i++)
+    {
+        int x, y;
+        cin >> x >> y;
+        col[getnum(x, y)] = true;
+        input.push_back(getnum(x, y));
+    }
+    for (auto it : input)
+    {
+        int x = it / n, y = it % n;
+        if (col[getnum(x, y + 1)])
+        {
+            adj[getnum(x, y + 1)].push_back(it);
+            adj[it].push_back(getnum(x, y + 1));
+        }
+        if (col[getnum(x + 1, y)])
+        {
+            adj[getnum(x + 1, y)].push_back(it);
+            adj[it].push_back(getnum(x + 1, y));
+        }
+    }
+    for(auto it:input)
+    {
+        if(!vis[it])
+        {
+            c=0;
+            dfs(it);
+            maxi=max(c,maxi);
+        }
+    }
+    cout<<maxi;
+    return 0;
+}
