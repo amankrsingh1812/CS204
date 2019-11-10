@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int N = 300000,M=1e+9 +7;
+const int N = 1000001,M=1e+9 +7;
 
 int parent[N], rank1[N], n;
 
